@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.serenityBDD.exampleProject16082019</groupId>
+    <artifactId>serenityBDD.exampleProject16082019</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+
+    <properties>
+        <serenity.version>2.0.60</serenity.version>
+        <surefire.version>2.20</surefire.version>
+        <test.name>*</test.name>
+        <slf4j.version>1.7.26</slf4j.version>
+        <source.encoding>UTF-8</source.encoding>
+        <java.version>8</java.version>
+        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
+        <serenity.jbehave.version>1.46.0</serenity.jbehave.version>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <!-- This plugin enable serenity report in html -->
+            <plugin>
+                <groupId>net.serenity-bdd.maven.plugins</groupId>
+                <artifactId>serenity-maven-plugin</artifactId>
+                <version>${serenity.version}</version>
+                <executions>
+                    <execution>
+                        <id>serenity-reports</id>
+                        <phase>post-integration-test</phase> <!-- файлы для отчета в папке target.site.serenity будут
+                                формироваться после команды mvn verify, т.е. будет формироваться файлик index.html открыв,
+                                который в браузере мы получим готовый интерактивный отчет, тут прописано что запуск тестов
+                                посте запуска интеграционных тестов, если интеграционные тесты упадут (т.е. хотябы один зафейлился
+                                мы не сможем сформировать отчет, мы исправили это в плагине сурфайера проигнорировав
+                                падение на выполнении теста который зафейлится (т.е. тест упал и отчет не формируется, мы это игнорим)-->
+                        <goals>
+                            <goal>aggregate</goal><!-- позволяет не вполнять вручную команду mvn serenity aggregate, файл интерактивного отчета index.html будет віполнятся автоматически -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--for ability to create Serenity-report on "verify" stage of Life Cycle-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <includes>
+                        <!--Здесь добавлем все классы (т.к. test.name = *) в папке test-->
+                        <include>**/test/**/${test.name}.java</include>
+                    </includes>
+                    <testFailureIgnore>true</testFailureIgnore> <!--for ignoring failed tests-->
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+            <!-- With help of this plugin we obtain version of java that we need to use-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${source.encoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.141.59</version>
+        </dependency>
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-core</artifactId>
+            <version>${serenity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-junit</artifactId>
+            <version>${serenity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>3.6.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- dependeency for BDD  -->
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-jbehave</artifactId>
+            <version>${serenity.jbehave.version}</version>
+        </dependency>
+    </dependencies>
+
+
+</project>
