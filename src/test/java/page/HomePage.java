@@ -31,7 +31,7 @@ public class HomePage extends PageObject {
     }
 
     @WhenPageOpens
-    public boolean waitControlElementsAppear() {
+    public boolean waitControlElementsAppear() {//Конструкция проверяет прогрузился ли элемент на странице
         try {
             element(iconProfile).waitUntilVisible();
             return true;

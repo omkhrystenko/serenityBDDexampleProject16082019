@@ -108,15 +108,23 @@ Docker allows you to implement different OS virtual machines on the server where
 G.G.R. (kind of Selenoid for launching on CMD project)
 
 - Установка Docker на Windows происходила через файл DockerToolbox.exe скачанный по ссылке которую прислали в Home Task #3
+запуск доккера через иконку на рабочем столе DockerToolbox однако она не у всех заработала.
+
+Витек устанавливал Docker с официального сайта для его установки сначала нужно зарегистрироваться на https://www.docker.com/
+-> Sign In -> Create Account -> Ввести Docker ID (как бы свой ник в системе), почту и пароль. (Позже данные должны
+понадобится при установке Docker)
+Также нужно скачать установочный файл для своей ОС. Установка доступна из своего профайла.
 
 - Установка Selenoid:
 We use manual for install on link https://aerokube.com/selenoid/latest/ there we need to load binary
 files first: Configuration Manager (link https://github.com/aerokube/cm/releases/tag/1.6.0) for Selenoid
 file cm_windows_amd64.exe
 
-a)Меняем имя скачанного файла на cm.exe и запускаем в командной строке:
+a)Меняем имя скачанного файла на cm.exe и запускаем в командной строке (на win 10 - WIN + R  cmd):
 > ./cm.exe selenoid start --vnc (в виндовс cm.exe selenoid start --vnc) после установки докера в ЦМД запустили скачаный эксешник через эту команду
 Началось подкачивание образов доккера. Это конфигур. менеджер который 1) проверяет есть ли доккер, 2)достает образ селеноида,
+команда vnc ри старте браузера дает возможность потом простматривать видео.
+
 3)Достает образы операционных систем и браузеров (в этих образах наодится ОС Убунту и версии браузеров)
 Эти образы подключаются к докеру и через докер могут взаимодействовать с селеноидом и через него с нашим кодом
 cm.exe это мы переименовали скачанный файл cm_windows_amd64.exe
@@ -141,7 +149,209 @@ RemoteWebDriver driver = new RemoteWebDriver(
     capabilities
 );
 
+Или что удобнее прописать параметры запуска тестов в файле serenity.properties
+
+serenity.project.name=Web tests.
+serenity.console.colors=true
+serenity.logging=VERBOSE
+
+webdriver.driver=chrome
+webdriver.remote.url=http://172.29.147.226:4444/wd/hub        - 172.29.147.226 - это локальная айпишка Коли, заместь localhost, т.е. если он на своей машине запустил Docker то мы можем через айпишник его машины конектится к нему и запускать на его машине тесты с наших машин
+
+serenity.driver.capabilities="browserName:chrome;enableVNC:true;enableVideo:true;"
+
+chrome.switches="--start-maximized"
+
 Home Task #4:
 Run created BDD feature for Login
 - Make sure proper Jbehave plugin installed in IDEA
 - Follow this article to complete home Task: https://johnfergusonsmart.com/running-individual-scenarios-jbehave-cucumber-serenity-bdd/
+
+
+Lesson 5
+
+docker ps - команда командной строки показывает запущенные в текущий момент контейнеры
+
+
+selenoid ui
+- раздел capabilities: в закладке select browser содержит перечень доступных браузеров
+по умолчанию подтягиваются 3 браузера по 2 версии chrome, firefox, opera. Для открытия сессии выбираем нужную нам
+версию браузера и нажимаем create session в разделе stats запустится контейнер с указанной версией браузера.
+
+- раздел stats: содержит в себе открытые сессии, а также показывает какое количиство сессий еще можно открыть
+(максимум 5 сесий на одной машине с доккером, если хотим открыть больше то нужно запускать еще одну машину с доккером
+и на ней сможем открыть еще пять, для управления несколькими машинами с доккерами используется специальный UI,
+который предусматривает возможность умравления контейнерами на нескольких машинах, а также администрирование
+доступами к тому или иному количеству контейнеров разными юзерами, которые будут пытаться присоединиться к нему.)
+
+- раздел videos - ранилище видео прохождения тестов.
+
+В UI можно запускать автотесты через указанеие линки, напр. указаная в serenity.properties (webdriver.remote.url=http://172.29.147.226:4444/wd/hub),
+а также пользоваться браузером вручную, для етого нужно в окошке сессии нажать Manual session и в открывшемся окне
+нажать на синий кружок вверху окна экрана сессии (разблокировать экран для использования вручную).
+
+Три круга - кнопки сверху экрана сессии это: красная - закрыть екран сессии; синяя - разблокировать экран для использования вручную;
+зеленая - свернуть/развернуть экран сессии.
+Экран сесии делится пополам, слева открывается крнтейнер с браузером и ос(которая недоступна для использования) и
+справа черный экран с командами.
+
+По умолчанию у нас загружается ОС ubuntu и браузеры по умолчанию в двух последних версиях (chrome, firefox и opera).
+Как правило считается что ели тест кейсы будут проходить в браузере на одной ОС то в 95% подобных случаев они пройдут
+и на других ОС, поэтому если у нас ограниченные русурсы и заказчик не насаивает на тестировании на другой ОС то тестирование
+проводится на ubuntu на нужной версии браузера или же нужно дополнительно устанавливать контейнер с необходимой нам ОС
+
+Если загруженные по умолчанию имеджи версий браузера нам не подходят и нам нужно загрузить другую нужную нам версию браузера
+то нам нужно выполнить следующие действия:
+
+- в директории юзера C:\Users\Dell\.aerokube\selenoid хранится папка browser.json в нем прописаны браузеры и их версии
+для закачки селеноидом, если мы хотим закачать себе браузер соотв. версии добавляем его туда.
+Чтобы его подгрузить в селеноид нам нужно выкачать этот имедж и перезапустить контейнер.
+Пример с порядком действий на Unix (на Windows должно быть также + нюансы):
+
+Add new docker image on flight:
+1) nano ~/.aerokube/selenoid/browsers.json     - открываем файл на редактирование в командной строке Unix, ручками добавили новый имедж в файл browser.json "selenoid/chrome:74.0" по примеру предыдущих имеджей в файле browser.json
+2) docker pull <new_image_name>                - выкачивает этот имедж (выкачивает слоями, некоторые слои могут уже быть и поэтому он его быстро выкачивает) например docker pull selenoid/chrome:74.0 --vnc если с vnc то имедж тяжелее но позволяет просматривать видео.
+
+3) docker kill -s HUP selenoid                 - мы убиваем предыдущий контейнер селеноид и он поумолчанию хочет переустановиться. После переустановки и обновления UI он должен появится в интерфейсе селеноид
+4) docker logs -f selenoid                     - если что - то не завелось можно почитать логи
+5) docker inspect selenoid                     - можно зайти внутрь контейнера и посмотреть что там
+
+
+Может быть ошибка:
+{"status":13,"value":{"message":"create container: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?"}}
+Нужно настраивать какие-то переменные и насторйки. Коля не сказал. Сказал что погуглит.
+
+
+Для запуска автотестов на докере сначала нам нужно закрыть все сесии в UI что бы были доступные места для сесии автотестов.
+Также нужно подготовить файл serenity.properties
+
+serenity.project.name=Web tests.
+serenity.console.colors=true
+serenity.logging=VERBOSE
+
+webdriver.driver=chrome
+webdriver.remote.url=http://172.29.147.226:4444/wd/hub        - 172.29.147.226 - это локальная айпишка Коли, заместь localhost
+
+serenity.driver.capabilities="browserName:chrome;enableVNC:true;enableVideo:true;"
+
+chrome.switches="--start-maximized"
+
+После того как все готово. Просто запускаем тест и он должен отобразится в соответствующей сессии на Selenoid UI,
+если открыть экран сессии то мы сможем увидеть прохождение нашего теста.
+       
+ Home Task #5:
+ - Complete task from home task #4 if not completed
+ - Make sure your Selenoid setup works locally on your PC 
+ Note: I'll try to provide solution for docker daemon on Win
+ 
+       
+Lesson 6
+
+Для того чтобы коректно работал запуск тестов из файлов stories необходимо установить плагин:
+JBhave Support 1.53     - Plugin for stosries to run via @Metafilter via command "mvn clean verify"
+
+В файл pom была добавлена секция <profiles>, которая позволяет запускать тесты в одном из трех режимимов(выбирается в 
+разделе Maven закладка справа на краю панели) browserstack, local, selenoid  (для отображения панели нужно перезагрузить Intelij): 
+    <profiles>
+        <profile>
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <!--To run by SerenitySites in parallel
+                            <parallel>suites</parallel>
+                            <threadCountSuites>2</threadCountSuites>
+                            <forkCount>2</forkCount>-->
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.driver>chrome</webdriver.driver>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>selenoid</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.remote.url>http://172.29.147.226:4444/wd/hub</webdriver.remote.url>
+                                <!--                                <webdriver.remote.url>http://34.220.181.94:4444/wd/hub</webdriver.remote.url>-->
+                                <serenity.driver.capabilities>enableVNC:true;enableVideo:true;sessionTimeout:2m;timeZone:America/Los_Angeles;</serenity.driver.capabilities>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>browserstack</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <!--To run by SerenitySites in parallel
+                            <parallel>suites</parallel>
+                            <threadCountSuites>2</threadCountSuites>
+                            <forkCount>2</forkCount>-->
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.remote.url>https://olehxxxxxxxxxnko1:ruMfFmLKxRh6hj78A6HH@hub-cloud.browserstack.com/wd/hub</webdriver.remote.url>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+Home Task #6
+1. Make sure your local setup of Docker/Selenoid is working
+Note: README.md should contain detailed info on how to setup selenoid on Windows.
+2. Make sure local/selenoid/browserstack profiles are working on your project. 
+Note: 'browserstack' profile needs to be filled with variables in pom.xml
+

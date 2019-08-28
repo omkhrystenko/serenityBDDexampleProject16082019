@@ -5,7 +5,9 @@ import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.core.pages.WebElementFacade;
 import net.thucydides.core.annotations.DefaultUrl;
 import net.thucydides.core.annotations.WhenPageOpens;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 @DefaultUrl("https://www.linkedin.com")
 public class LandingPage extends PageObject {
@@ -18,7 +20,7 @@ public class LandingPage extends PageObject {
     public WebElementFacade buttonEnterForAuthentification;
 
     @WhenPageOpens
-    public boolean waitControllElementsAppear() {
+    public boolean waitControllElementsAppear() {//Конструкция проверяет прогрузился ли элемент на странице
         try {
             element(buttonEnterForAuthentification).waitUntilVisible();
             return true;
@@ -27,8 +29,9 @@ public class LandingPage extends PageObject {
         }
     }
 
-    public void clickEnterToLoginPage(){
-        buttonEnterForAuthentification.click();
+    public void clickOnButtonWithText(String buttonText){// Это ломает структуру пейдж обджект, но дает возможность искать элементы по названию
+        WebElement button = getDriver().findElement(By.xpath(String.format("//a[text()='%s']", buttonText)));
+        button.click();
     }
 
 

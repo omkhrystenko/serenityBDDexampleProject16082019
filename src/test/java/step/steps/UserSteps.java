@@ -55,8 +55,8 @@ public class UserSteps extends ScenarioSteps {
     }
 
     @Step
-    public UserSteps goToLoginPage(){
-        landingPage.clickEnterToLoginPage();
+    public UserSteps clickOnButton(String buttonText){
+        landingPage.clickOnButtonWithText(buttonText);
         logger.info("Click on Enter button on Landing page was successful");
         return this;
     }

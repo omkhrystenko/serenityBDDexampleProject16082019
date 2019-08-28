@@ -1,7 +1,8 @@
 Login
 
-Meta
-@tag product:login
+Meta:
+@tag login
+@tag regression
 
 Narrative
     In order to use app functionality
@@ -9,7 +10,14 @@ Narrative
     I want to be able to login
 
 Scenario: Successful user login
+Meta:
+@tag login01
 Given I open Landing page
-Given I go to Login page
-When I submit authentication data (testchitest@gmail.com, Qwerty12)
+
+When I click on 'Sign in' button
+Then I should be on Login page
+
+
+When I sign In as 'testchitest@gmail.com' , 'Qwerty12'
 Then Home page is loaded
+

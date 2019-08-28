@@ -18,6 +18,7 @@
         <java.version>8</java.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <serenity.jbehave.version>1.46.0</serenity.jbehave.version>
+        <maven.failsafe.plugin.version>2.22.2</maven.failsafe.plugin.version>
     </properties>
 
     <build>
@@ -70,6 +71,103 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <!--To run by SerenitySites in parallel
+                            <parallel>suites</parallel>
+                            <threadCountSuites>2</threadCountSuites>
+                            <forkCount>2</forkCount>-->
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.driver>chrome</webdriver.driver>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>selenoid</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.remote.url>http://172.29.147.226:4444/wd/hub</webdriver.remote.url>
+                                <!--                                <webdriver.remote.url>http://34.220.181.94:4444/wd/hub</webdriver.remote.url>-->
+                                <serenity.driver.capabilities>enableVNC:true;enableVideo:true;sessionTimeout:2m;timeZone:America/Los_Angeles;</serenity.driver.capabilities>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>browserstack</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven.failsafe.plugin.version}</version>
+                        <configuration>
+                            <!--To run by SerenitySites in parallel
+                            <parallel>suites</parallel>
+                            <threadCountSuites>2</threadCountSuites>
+                            <forkCount>2</forkCount>-->
+                            <includes>
+                                <!--To run by testName from command line-->
+                                <include>**/test/**/${test.name}.java</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <webdriver.remote.url>https://olehxxxxxxxxxnko1:ruMfFmLKxRh6hj78A6HH@hub-cloud.browserstack.com/wd/hub</webdriver.remote.url>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>

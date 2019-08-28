@@ -23,7 +23,7 @@ public class LoginPage extends PageObject {
     @FindBy(xpath="//*[@id = 'password']")
     public WebElementFacade fieldPassword;
 
-    @FindBy(xpath="//*[@id='app__container']/main/div/form/div[3]/button")
+    @FindBy(xpath="//button[@type='submit']")
     public WebElementFacade buttonEnterForAuthentification;
 
     @WhenPageOpens
@@ -34,7 +34,7 @@ public class LoginPage extends PageObject {
 
 
     @WhenPageOpens
-    public boolean waitControllElementsAppear() {
+    public boolean waitControllElementsAppear() {//Конструкция проверяет прогрузился ли элемент на странице
         try {
             element(fieldLogin).waitUntilVisible();
             element(fieldPassword).waitUntilVisible();
